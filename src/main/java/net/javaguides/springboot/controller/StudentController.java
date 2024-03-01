@@ -1,10 +1,8 @@
 package net.javaguides.springboot.controller;
 
 import net.javaguides.springboot.bean.Student;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +28,7 @@ public class StudentController {
         return students;
     }
 
-    // Spring Boot REST API with Path Variable
-    // {id} - URI Template Variable
+    // Path Variable ({id} - URI Template Variable)
     // http://localhost:8080/students/1
     @GetMapping("students/{id}/{first-name}/{last-name}")
     public Student studentPathVariable(@PathVariable("id") int studentID,
@@ -40,10 +37,36 @@ public class StudentController {
         return new Student(firstName, lastName, studentID);
     }
 
-    // Spring boot REST API with Request Param
+    // Request Param
     // http://localhost:8080/students?id=1&firstName=Mike&lastName=Jones
     @GetMapping("students/query")
     public Student studentRequestVariable(@RequestParam int id,@RequestParam String firstName, @RequestParam String lastName){
         return new Student(firstName, lastName, id);
+    }
+
+    // POST
+    @PostMapping("students/create")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Student createStudent(@RequestBody Student student){
+        System.out.println(student.getId());
+        System.out.println(student.getFirstName());
+        System.out.println(student.getLastName());
+        return student;
+    }
+
+    // PUT
+    @PutMapping("students/{id}/update")
+    @ResponseStatus(HttpStatus.OK)
+    public Student updateStudent(@RequestBody Student student,@PathVariable("id") int studentId){
+        System.out.println(student.getFirstName());
+        System.out.println(student.getLastName());
+        return student;
+    }
+
+    // Delete
+    @DeleteMapping("students/{id}/delete")
+    public String deleteStudent(@PathVariable("id") int studentID){
+        System.out.println("success");
+        return "Student deleted successfully.";
     }
 }
