@@ -2,71 +2,75 @@ package net.javaguides.springboot.controller;
 
 import net.javaguides.springboot.bean.Student;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("students")
 public class StudentController {
 
     // http://localhost:8080/student
     @GetMapping("student")
-    public Student getStudent(){
+    public ResponseEntity<Student> getStudent(){
         Student student = new Student("Alexander", "Ovechkin", 8);
-        return student;
+        return ResponseEntity.ok().header("cutom header", "header values").body(student);
     }
 
     // http://localhost:8080/students
-    @GetMapping("students")
-    public List<Student> getStudents(){
+    @GetMapping
+    public ResponseEntity<List<Student>> getStudents(){
         List<Student> students = new ArrayList<>();
         students.add(new Student("first1", "last1", 1));
         students.add(new Student("first2", "last2", 2));
         students.add(new Student("first3", "last3", 3));
         students.add(new Student("first4", "last4", 4));
-        return students;
+        return ResponseEntity.ok(students);
     }
 
     // Path Variable ({id} - URI Template Variable)
     // http://localhost:8080/students/1
-    @GetMapping("students/{id}/{first-name}/{last-name}")
-    public Student studentPathVariable(@PathVariable("id") int studentID,
+    @GetMapping("/{id}/{first-name}/{last-name}")
+    public ResponseEntity<Student> studentPathVariable(@PathVariable("id") int studentID,
                                        @PathVariable("first-name") String firstName,
                                        @PathVariable("last-name") String lastName){
-        return new Student(firstName, lastName, studentID);
+        Student student = new Student(firstName, lastName, studentID);
+        return ResponseEntity.ok(student);
     }
 
     // Request Param
     // http://localhost:8080/students?id=1&firstName=Mike&lastName=Jones
-    @GetMapping("students/query")
-    public Student studentRequestVariable(@RequestParam int id,@RequestParam String firstName, @RequestParam String lastName){
-        return new Student(firstName, lastName, id);
+    @GetMapping("/query")
+    public ResponseEntity<Student> studentRequestVariable(@RequestParam int id,@RequestParam String firstName, @RequestParam String lastName){
+        Student student = new Student(firstName, lastName, id);
+        return ResponseEntity.ok(student);
     }
 
     // POST
-    @PostMapping("students/create")
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Student createStudent(@RequestBody Student student){
+    public ResponseEntity<Student> createStudent(@RequestBody Student student){
         System.out.println(student.getId());
         System.out.println(student.getFirstName());
         System.out.println(student.getLastName());
-        return student;
+        return new ResponseEntity<>(student, HttpStatus.CREATED);
     }
 
     // PUT
-    @PutMapping("students/{id}/update")
+    @PutMapping("/{id}/update")
     @ResponseStatus(HttpStatus.OK)
-    public Student updateStudent(@RequestBody Student student,@PathVariable("id") int studentId){
+    public ResponseEntity<Student> updateStudent(@RequestBody Student student,@PathVariable("id") int studentId){
         System.out.println(student.getFirstName());
         System.out.println(student.getLastName());
-        return student;
+        return ResponseEntity.ok(student);
     }
 
-    // Delete
-    @DeleteMapping("students/{id}/delete")
-    public String deleteStudent(@PathVariable("id") int studentID){
+    // DELETE
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<String> deleteStudent(@PathVariable("id") int studentID){
         System.out.println("success");
-        return "Student deleted successfully.";
+        return ResponseEntity.ok("Student deleted successfully.");
     }
 }
